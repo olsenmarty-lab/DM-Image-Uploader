@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Image Upload Widget</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#f7f7f5;--card:#fff;--bdr:#e4e3de;--tx:#1c1c1a;--tx2:#6e6d68;--tx3:#a3a29c;
+    --ac:#2d5be3;--ac-s:#e8edfb;--ac-h:#1d44b8;
+    --gn:#1a8756;--gn-s:#e4f5ec;--rd:#c03030;
+    --r:10px;--rs:7px;--rx:5px;
+    --f:'DM Sans',system-ui,-apple-system,sans-serif;
+  }
+
+  /* Body fills the iframe — no padding, transparent bg so JotForm's form theme shows through */
+  body{font-family:var(--f);background:transparent;color:var(--tx);line-height:1.5;margin:0;padding:8px}
+
+  /* ---- DROPZONE ---- */
+  .dz{
+    border:2px dashed var(--bdr);border-radius:var(--r);padding:24px 16px;
+    text-align:center;cursor:pointer;transition:all 150ms;background:var(--bg);position:relative;
+  }
+  .dz:hover,.dz.over{border-color:var(--ac);background:var(--ac-s)}
+  .dz-ico{
+    width:40px;height:40px;margin:0 auto 8px;border-radius:50%;
+    background:var(--ac-s);display:flex;align-items:center;justify-content:center;
+  }
+  .dz-ico svg{width:20px;height:20px;stroke:var(--ac);fill:none;stroke-width:1.8}
+  .dz h3{font-size:14px;font-weight:500;margin-bottom:2px}
+  .dz .lk{color:var(--ac);font-weight:600;text-decoration:underline;text-underline-offset:2px}
+  .dz p{font-size:12px;color:var(--tx3)}
+  .dz input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0}
+
+  /* ---- EDITOR ---- */
+  .ed{display:none}.ed.on{display:block}
+
+  .crop-wrap{
+    position:relative;width:100%;border-radius:var(--rs);
+    overflow:hidden;background:#0e0e0e;
+  }
+  .crop-wrap img.cs{display:block;max-width:100%;max-height:340px}
+
+  /* Overlay — JS positions it over the crop box */
+  .ov-lay{
+    position:absolute;pointer-events:none;z-index:100;
+    display:none;overflow:hidden;
+  }
+  .ov-lay.on{display:block}
+  .ov-lay img{width:100%;height:100%;display:block}
+
+  /* Subtle hint below the crop area when overlay is active */
+  .ov-hint{
+    display:none;align-items:center;gap:5px;
+    padding:5px 0;font-size:11px;color:var(--tx3);
+  }
+  .ov-hint.on{display:flex}
+  .ov-hint svg{width:12px;height:12px;stroke:var(--tx3);fill:none;stroke-width:1.8;flex-shrink:0}
+
+  .crop-info{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:5px 0;font-size:11px;color:var(--tx3);
+  }
+  .dims{
+    background:var(--bg);padding:2px 7px;border-radius:var(--rx);
+    font-size:11px;font-weight:500;color:var(--tx2);
+  }
+  .dims.ok{background:var(--gn-s);color:var(--gn)}
+
+  .ed-bar{display:flex;justify-content:flex-end;gap:6px;padding:8px 0 0}
+  .btn{
+    padding:7px 16px;border-radius:var(--rs);border:none;
+    font-size:13px;font-weight:600;cursor:pointer;
+    transition:all 150ms;font-family:var(--f);
+  }
+  .btn-p{background:var(--ac);color:#fff}
+  .btn-p:hover{background:var(--ac-h)}
+  .btn-o{background:var(--card);color:var(--tx2);border:1px solid var(--bdr)}
+  .btn-o:hover{background:var(--bg)}
+
+  /* ---- DONE ---- */
+  .done{display:none}.done.on{display:block}
+  .done-card{
+    display:flex;gap:10px;align-items:center;
+    background:var(--gn-s);border:1px solid #b4dfc8;
+    border-radius:var(--rs);padding:10px 12px;
+  }
+  .done-thumb{
+    width:52px;height:52px;border-radius:var(--rx);
+    object-fit:cover;border:1px solid #b4dfc8;flex-shrink:0;
+  }
+  .done-info{flex:1;min-width:0}
+  .done-fn{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .done-fm{font-size:11px;color:var(--gn);margin-top:2px}
+  .done-rm{
+    padding:5px 10px;border-radius:var(--rx);
+    border:1px solid #b4dfc8;background:transparent;
+    color:var(--gn);font-size:11px;font-weight:500;
+    cursor:pointer;font-family:var(--f);white-space:nowrap;flex-shrink:0;
+  }
+
+  /* Cropper overrides */
+  .cropper-view-box{outline:2px solid var(--ac);outline-offset:-1px}
+  .cropper-point{background:var(--ac)!important;width:9px!important;height:9px!important;border-radius:50%!important;opacity:1!important}
+  .cropper-line{background:var(--ac)!important}
+  .cropper-dashed{border-color:rgba(255,255,255,.28)!important}
+  .cropper-modal{background:rgba(0,0,0,.52)!important}
+
+  @media(max-width:400px){
+    .dz{padding:18px 12px}
+    .crop-wrap img.cs{max-height:260px}
+  }
+</style>
+</head>
+<body>
+
+  <!-- Dropzone -->
+  <div class="dz" id="dz">
+    <div class="dz-ico">
+      <svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L7 9m5-5l5 5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <h3>Drop image or <span class="lk">browse</span></h3>
+    <p>JPEG, PNG, WebP — up to 25 MB</p>
+    <input type="file" id="fi" accept="image/jpeg,image/png,image/webp,image/gif">
+  </div>
+
+  <!-- Editor -->
+  <div class="ed" id="ed">
+    <div class="crop-wrap" id="cWrap">
+      <img class="cs" id="cImg" src="" alt="Crop preview">
+      <div class="ov-lay" id="ovL">
+        <img id="ovLI" src="" alt="">
+      </div>
+    </div>
+    <div class="ov-hint" id="ovH">
+      <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3"/></svg>
+      <span>Overlay shows how your image will appear in the final render</span>
+    </div>
+    <div class="crop-info">
+      <span id="cLbl">Drag to position, resize handles to adjust</span>
+      <span class="dims ok" id="cDim"></span>
+    </div>
+    <div class="ed-bar">
+      <button class="btn btn-o" onclick="doCancel()">Cancel</button>
+      <button class="btn btn-p" id="uBtn" onclick="doUpload()">Crop &amp; Done</button>
+    </div>
+  </div>
+
+  <!-- Done state -->
+  <div class="done" id="doneP">
+    <div class="done-card">
+      <img class="done-thumb" id="dTh" src="" alt="">
+      <div class="done-info">
+        <div class="done-fn" id="dFn"></div>
+        <div class="done-fm" id="dFm"></div>
+      </div>
+      <button class="done-rm" onclick="doRemove()">Remove</button>
+    </div>
+  </div>
+
+<!-- JotForm Custom Widget API -->
+<script src="//js.jotform.com/JotFormCustomWidget.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+<script>
+(function(){
+'use strict';
+
+// ─── CONFIG — populated from JotForm widget parameters ───────────────────────
+// These are set once in JotForm's widget settings sidebar (the wand icon).
+// overlayUrl  : full URL to a PNG with transparency (your lower third etc.)
+// outputWidth : pixel width of the exported image  (default 1920)
+// outputHeight: pixel height of the exported image (default 1080)
+var cfg = { overlayUrl: '', outputWidth: 1920, outputHeight: 1080 };
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+var cropper   = null;
+var selFile   = null;
+var resultBlob     = null;
+var resultDataURL  = null;
+var resultFilename = null;
+
+var $ = function(id){ return document.getElementById(id); };
+
+// ─── JOTFORM WIDGET BOOTSTRAP ─────────────────────────────────────────────────
+// JFCustomWidget fires 'ready' once the widget is loaded inside JotForm.
+// Widget parameters (set in the registration panel) arrive here.
+JFCustomWidget.subscribe('ready', function() {
+
+  // Read developer-configured parameters
+  var ow  = JFCustomWidget.getWidgetSetting('overlayUrl');
+  var w   = JFCustomWidget.getWidgetSetting('outputWidth');
+  var h   = JFCustomWidget.getWidgetSetting('outputHeight');
+
+  if (ow) cfg.overlayUrl    = ow.trim();
+  if (w)  cfg.outputWidth   = parseInt(w)  || 1920;
+  if (h)  cfg.outputHeight  = parseInt(h)  || 1080;
+
+  // Pre-load the overlay image so it appears instantly when cropper opens
+  if (cfg.overlayUrl) {
+    $('ovLI').src = cfg.overlayUrl;
+  }
+
+  // Resize the JotForm iframe to fit our widget
+  resizeFrame(120); // dropzone height
+});
+
+// JotForm calls 'submit' when the form's Submit button is pressed.
+// We send the generated filename as the field value.
+JFCustomWidget.subscribe('submit', function() {
+  if (resultFilename) {
+    JFCustomWidget.sendSubmit({ valid: true,  value: resultFilename });
+  } else {
+    JFCustomWidget.sendSubmit({ valid: false, value: '' });
+  }
+});
+
+// ─── RESIZE HELPER ────────────────────────────────────────────────────────────
+function resizeFrame(h) {
+  JFCustomWidget.requestFrameResize({ height: h });
+}
+
+// ─── FILENAME GENERATOR ───────────────────────────────────────────────────────
+// Alphanumeric only, max 65 chars total (safe for AE import).
+// Pattern: [up-to-20-char sanitised base][8-char random].png
+function genFilename(original) {
+  var base = (original || 'image')
+    .replace(/\.[^.]+$/, '')
+    .replace(/[^a-zA-Z0-9]/g, '')
+    .substring(0, 20)
+    .toLowerCase();
+  var chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  var rand  = '';
+  for (var i = 0; i < 8; i++) {
+    rand += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return (base || '') + rand + '.png'; // max ~33 chars, well under 65
+}
+
+// ─── ALPHA DETECTION ──────────────────────────────────────────────────────────
+function imageHasAlpha(img) {
+  var c   = document.createElement('canvas');
+  c.width  = Math.min(img.naturalWidth,  64);
+  c.height = Math.min(img.naturalHeight, 64);
+  var ctx  = c.getContext('2d');
+  ctx.drawImage(img, 0, 0, c.width, c.height);
+  var data = ctx.getImageData(0, 0, c.width, c.height).data;
+  for (var i = 3; i < data.length; i += 4) {
+    if (data[i] < 255) return true;
+  }
+  return false;
+}
+
+// ─── DROPZONE ─────────────────────────────────────────────────────────────────
+var dz = $('dz');
+var fi = $('fi');
+
+dz.addEventListener('dragover',  function(e){ e.preventDefault(); dz.classList.add('over'); });
+dz.addEventListener('dragleave', function()  { dz.classList.remove('over'); });
+dz.addEventListener('drop',      function(e) {
+  e.preventDefault();
+  dz.classList.remove('over');
+  if (e.dataTransfer.files.length) pickFile(e.dataTransfer.files[0]);
+});
+fi.addEventListener('change', function(e) {
+  if (e.target.files.length) pickFile(e.target.files[0]);
+});
+
+function pickFile(f) {
+  var allowed = ['image/jpeg','image/png','image/webp','image/gif'];
+  if (allowed.indexOf(f.type) === -1) { alert('Please use a JPEG, PNG, or WebP image.'); return; }
+  if (f.size > 25 * 1024 * 1024)     { alert('Maximum file size is 25 MB.'); return; }
+  selFile = f;
+  openEditor(f);
+}
+
+// ─── EDITOR ───────────────────────────────────────────────────────────────────
+function openEditor(f) {
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    $('cImg').src = e.target.result;
+    setState('ed');
+    resizeFrame(460);
+
+    if (cropper) { cropper.destroy(); cropper = null; }
+
+    cropper = new Cropper($('cImg'), {
+      aspectRatio:       cfg.outputWidth / cfg.outputHeight,
+      viewMode:          1,
+      dragMode:          'move',
+      autoCropArea:      0.88,
+      responsive:        true,
+      guides:            true,
+      center:            true,
+      highlight:         true,
+      cropBoxMovable:    true,
+      cropBoxResizable:  true,
+      toggleDragModeOnDblclick: false,
+
+      crop: function() {
+        updateDimLabel();
+        positionOverlay();
+      },
+      ready: function() {
+        updateDimLabel();
+        if (cfg.overlayUrl) showOverlay();
+      }
+    });
+  };
+  reader.readAsDataURL(f);
+}
+
+function updateDimLabel() {
+  var el  = $('cDim');
+  el.textContent = cfg.outputWidth + ' × ' + cfg.outputHeight + ' px';
+  $('cLbl').textContent = 'Crop ratio locked to ' + cfg.outputWidth + '×' + cfg.outputHeight;
+}
+
+// ─── OVERLAY POSITIONING ──────────────────────────────────────────────────────
+// The overlay div is absolutely positioned inside .crop-wrap.
+// On every crop event we read getCropBoxData() and apply those px values,
+// so the overlay sits exactly over the crop selection.
+function positionOverlay() {
+  if (!cropper || !cfg.overlayUrl) return;
+  var box = cropper.getCropBoxData();
+  var el  = $('ovL');
+  el.style.left   = box.left   + 'px';
+  el.style.top    = box.top    + 'px';
+  el.style.width  = box.width  + 'px';
+  el.style.height = box.height + 'px';
+}
+
+function showOverlay() {
+  if (!cfg.overlayUrl) return;
+  positionOverlay();
+  $('ovL').classList.add('on');
+  $('ovH').classList.add('on');
+}
+
+function hideOverlay() {
+  $('ovL').classList.remove('on');
+  $('ovH').classList.remove('on');
+}
+
+// ─── CROP & EXPORT ────────────────────────────────────────────────────────────
+window.doUpload = function() {
+  if (!cropper) return;
+
+  var canvas = cropper.getCroppedCanvas({
+    width:                 cfg.outputWidth,
+    height:                cfg.outputHeight,
+    imageSmoothingEnabled: true,
+    imageSmoothingQuality: 'high'
+  });
+  if (!canvas) { alert('Could not generate cropped image.'); return; }
+
+  var hasAlpha = imageHasAlpha($('cImg'));
+
+  // Always PNG — lossless, alpha channel preserved automatically
+  canvas.toBlob(function(blob) {
+    if (!blob) { alert('Export failed.'); return; }
+
+    resultBlob     = blob;
+    resultFilename = genFilename(selFile.name);
+
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      resultDataURL = ev.target.result;
+
+      // Show done state
+      $('dTh').src   = canvas.toDataURL('image/png');
+      $('dFn').textContent = resultFilename;
+      $('dFm').textContent =
+        canvas.width + '×' + canvas.height + ' PNG' +
+        (hasAlpha ? ' · alpha' : '') +
+        ' · ' + fmtBytes(blob.size);
+
+      if (cropper) { cropper.destroy(); cropper = null; }
+      hideOverlay();
+      setState('done');
+      resizeFrame(90);
+
+      // Tell JotForm the field now has a valid value
+      // (also fires on form submit via the 'submit' subscription above)
+      JFCustomWidget.sendSubmit({ valid: true, value: resultFilename });
+    };
+    reader.readAsDataURL(blob);
+
+  }, 'image/png');
+};
+
+// ─── CANCEL / REMOVE ─────────────────────────────────────────────────────────
+window.doCancel = function() {
+  if (cropper) { cropper.destroy(); cropper = null; }
+  selFile = null; fi.value = '';
+  hideOverlay();
+  setState('dz');
+  resizeFrame(120);
+  resultBlob = resultDataURL = resultFilename = null;
+  JFCustomWidget.sendSubmit({ valid: false, value: '' });
+};
+
+window.doRemove = function() {
+  selFile = null; fi.value = '';
+  resultBlob = resultDataURL = resultFilename = null;
+  setState('dz');
+  resizeFrame(120);
+  JFCustomWidget.sendSubmit({ valid: false, value: '' });
+};
+
+// ─── UI STATE ─────────────────────────────────────────────────────────────────
+function setState(s) {
+  $('dz').style.display = s === 'dz' ? '' : 'none';
+  $('ed').classList.toggle('on',    s === 'ed');
+  $('doneP').classList.toggle('on', s === 'done');
+}
+
+// ─── UTILS ───────────────────────────────────────────────────────────────────
+function fmtBytes(b) {
+  if (b < 1024)        return b + ' B';
+  if (b < 1048576)     return (b / 1024).toFixed(1)    + ' KB';
+  return                      (b / 1048576).toFixed(1) + ' MB';
+}
+
+})();
+</script>
+</body>
+</html>
