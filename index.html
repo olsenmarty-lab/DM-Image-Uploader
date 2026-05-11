@@ -22,7 +22,7 @@
     color:var(--tx);
     margin:0;
     padding:0;
-    overflow: visible;
+    overflow: visible; /* Required for Jotform to detect size changes */
     display: flex;
     justify-content: center; 
   }
@@ -57,7 +57,7 @@
   }
   .dz input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;}
 
-  /* ---- EDITOR ---- */
+  /* ---- EDITOR (Expansion Area) ---- */
   .ed{display:none; width: 100%; max-width: 700px; padding:10px; background:#fff; border-radius:var(--r); border:1px solid var(--bdr);}
   .ed.on{display:block}
   .crop-wrap{position:relative;width:100%;border-radius:var(--rs);overflow:hidden;background:#0e0e0e;}
@@ -76,7 +76,7 @@
   .btn-p:hover{background:var(--ac-h)}
   .btn-o{background:var(--card);color:var(--tx2);border:1px solid var(--bdr)}
 
-  /* ---- SUCCESS STATE ---- */
+  /* ---- SUCCESS CARD ---- */
   .done{display:none; width: 100%;}
   .done.on{display:block}
   .done-card{display:flex;gap:15px;align-items:center;background:#e4f5ec;border:1px solid #b4dfc8;border-radius:var(--rs);padding:10px 15px;}
@@ -128,6 +128,7 @@
 (function(){
 'use strict';
 
+// ─── CONFIG ───────────────────────────────────────────────────────────────────
 var cloudName = 'douyogs5j';
 var uploadPreset = 'DM Image Upload Preset'; 
 
@@ -136,6 +137,15 @@ var cropper = null;
 var resultFilename = null;
 var $ = function(id){ return document.getElementById(id); };
 
+// ─── JOTFORM COMMUNICATION ────────────────────────────────────────────────────
+function forceResize(h) {
+  let count = 0;
+  const interval = setInterval(() => {
+    JFCustomWidget.requestFrameResize({ height: h });
+    if (++count > 12) clearInterval(interval);
+  }, 50);
+}
+
 JFCustomWidget.subscribe('ready', function() {
   var ow = JFCustomWidget.getWidgetSetting('overlayUrl');
   var w  = JFCustomWidget.getWidgetSetting('outputWidth');
@@ -143,22 +153,25 @@ JFCustomWidget.subscribe('ready', function() {
   if (ow) { cfg.overlayUrl = ow.trim(); $('ovLI').src = cfg.overlayUrl; }
   cfg.outputWidth  = parseInt(w) || 1920;
   cfg.outputHeight = parseInt(h) || 1080;
-  JFCustomWidget.requestFrameResize({ height: 80 });
+  forceResize(80);
 });
 
+// ─── UPLOAD LOGIC ─────────────────────────────────────────────────────────────
 window.doUpload = function() {
   if (!cropper) return;
   var canvas = cropper.getCroppedCanvas({ width: cfg.outputWidth, height: cfg.outputHeight, imageSmoothingQuality: 'high' });
 
   canvas.toBlob(function(blob) {
-    var formData = new FormData();
-    formData.append('file', blob);
-    formData.append('upload_preset', uploadPreset);
-    
-    // Generate Unique ID
+    // 1. Generate unique filename
     var uniqueID = 'render_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
     
-    // Force Filename Metadata
+    // 2. THE BLOB FIX: Wrap the blob in a File object to force an internal name
+    // This stops Chrome from downloading the file as "blob.png"
+    var file = new File([blob], uniqueID + ".png", { type: "image/png" });
+
+    var formData = new FormData();
+    formData.append('file', file); 
+    formData.append('upload_preset', uploadPreset);
     formData.append('public_id', uniqueID);
     formData.append('original_filename', uniqueID);
 
@@ -170,12 +183,13 @@ window.doUpload = function() {
     })
     .then(res => res.json())
     .then(data => {
+      // Create Nexrender attachment URL
       var finalUrl = data.secure_url.replace('/upload/', '/upload/f_png,fl_attachment/');
       resultFilename = finalUrl;
       JFCustomWidget.sendData({ value: finalUrl });
       $('dTh').src = data.secure_url;
       setState('done');
-      JFCustomWidget.requestFrameResize({ height: 90 }); 
+      forceResize(90); 
     })
     .catch(err => {
       alert('Upload failed.');
@@ -185,12 +199,13 @@ window.doUpload = function() {
   }, 'image/png');
 };
 
+// ─── UI & CROPPER LOGIC ───────────────────────────────────────────────────────
 function openEditor(f) {
   var reader = new FileReader();
   reader.onload = function(e) {
     $('cImg').src = e.target.result;
     setState('ed');
-    JFCustomWidget.requestFrameResize({ height: 750 });
+    forceResize(750); 
     
     if (cropper) cropper.destroy();
     cropper = new Cropper($('cImg'), {
@@ -223,8 +238,8 @@ function setState(s) {
 
 var fi = $('fi');
 fi.addEventListener('change', function(e){ if(e.target.files.length) openEditor(e.target.files[0]); });
-window.doCancel = function() { setState('dz'); JFCustomWidget.requestFrameResize({ height: 80 }); };
-window.doRemove = function() { setState('dz'); JFCustomWidget.requestFrameResize({ height: 80 }); JFCustomWidget.sendData({ value: '' }); };
+window.doCancel = function() { setState('dz'); forceResize(80); };
+window.doRemove = function() { setState('dz'); forceResize(80); JFCustomWidget.sendData({ value: '' }); };
 
 })();
 </script>
