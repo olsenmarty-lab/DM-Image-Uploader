@@ -15,12 +15,19 @@
     --r:10px;--rs:7px;--rx:5px;
     --f:'DM Sans',system-ui,sans-serif;
   }
-  body{font-family:var(--f);background:transparent;color:var(--tx);margin:0;padding:0;overflow:visible;display:flex;justify-content:center;}
-  .dz{background:var(--ac);color:#fff;border-radius:var(--rs);padding:10px 20px;display:inline-flex;align-items:center;gap:8px;cursor:pointer;transition:all 150ms ease;border:none;box-shadow:0 2px 6px rgba(45,91,227,0.2);position:relative;margin-top:5px;}
+  body{font-family:var(--f);background:transparent;color:var(--tx);margin:0;padding:0;overflow:visible;display:flex;flex-direction:column;align-items:center;}
+  
+  /* LABEL STYLE */
+  #wLabel{display:none; width:100%; text-align:center; font-size:14px; font-weight:700; color:var(--tx); margin-bottom:8px; margin-top:5px;}
+
+  /* BLUE BUTTON */
+  .dz{background:var(--ac);color:#fff;border-radius:var(--rs);padding:10px 20px;display:inline-flex;align-items:center;gap:8px;cursor:pointer;transition:all 150ms ease;border:none;box-shadow:0 2px 6px rgba(45,91,227,0.2);position:relative;}
   .dz:hover{background:var(--ac-h);transform:translateY(-1px);box-shadow:0 4px 12px rgba(45,91,227,0.3);}
   .dz-ico svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2.5;}
-  .dz h3{font-size:14px;font-weight:600;margin:0;}
+  .dz h3{font-size:14px; font-weight:600; margin:0;}
   .dz input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;}
+
+  /* EDITOR & DONE CARD stays same... */
   .ed{display:none;width:100%;max-width:700px;padding:10px;background:#fff;border-radius:var(--r);border:1px solid var(--bdr);}
   .ed.on{display:block}
   .crop-wrap{position:relative;width:100%;border-radius:var(--rs);overflow:hidden;background:#0e0e0e;}
@@ -43,6 +50,8 @@
 </head>
 <body>
 
+  <div id="wLabel">Widget Name</div>
+
   <div class="dz" id="dz"><div class="dz-ico"><svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L7 9m5-5l5 5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3>Upload Image</h3><input type="file" id="fi" accept="image/jpeg,image/png,image/webp"></div>
 
   <div class="ed" id="ed"><div class="crop-wrap" id="cWrap"><img class="cs" id="cImg" src="" alt=""><div class="ov-lay" id="ovL"><img id="ovLI" src="" alt=""></div></div><div class="crop-info"><span>Adjust crop to fit render area</span><span class="dims" id="cDim"></span></div><div class="ed-bar"><button class="btn btn-o" onclick="doCancel()">Cancel</button><button class="btn btn-p" id="uBtn" onclick="doUpload()">Crop &amp; Done</button></div></div>
@@ -60,10 +69,25 @@ var cfg = { overlayUrl: '', outputWidth: 1920, outputHeight: 1080 }, cropper = n
 function forceResize(h) { let count = 0; const interval = setInterval(() => { JFCustomWidget.requestFrameResize({ height: h }); if (++count > 12) clearInterval(interval); }, 50); }
 
 JFCustomWidget.subscribe('ready', function() {
-  var ow = JFCustomWidget.getWidgetSetting('overlayUrl'), w = JFCustomWidget.getWidgetSetting('outputWidth'), h = JFCustomWidget.getWidgetSetting('outputHeight');
+  // 1. Get Settings from JotForm
+  var ow = JFCustomWidget.getWidgetSetting('overlayUrl');
+  var w  = JFCustomWidget.getWidgetSetting('outputWidth');
+  var h  = JFCustomWidget.getWidgetSetting('outputHeight');
+  var labelText = JFCustomWidget.getWidgetSetting('widgetLabel');
+  var showLabel = JFCustomWidget.getWidgetSetting('showLabel');
+
+  // 2. Handle Label Visibility
+  if (showLabel === 'Yes' && labelText) {
+    $('wLabel').textContent = labelText;
+    $('wLabel').style.display = 'block';
+  }
+
   if (ow) { cfg.overlayUrl = ow.trim(); $('ovLI').src = cfg.overlayUrl; }
   cfg.outputWidth = parseInt(w) || 1920; cfg.outputHeight = parseInt(h) || 1080;
-  forceResize(80);
+  
+  // Adjust base height if label is visible
+  var baseH = (showLabel === 'Yes') ? 110 : 80;
+  forceResize(baseH);
 });
 
 window.doUpload = function() {
@@ -82,7 +106,8 @@ window.doUpload = function() {
     .then(res => res.json()).then(data => {
       var finalUrl = data.secure_url.replace('/upload/', '/upload/f_png,fl_attachment/');
       resultFilename = finalUrl; JFCustomWidget.sendData({ value: finalUrl });
-      $('dTh').src = data.secure_url; setState('done'); forceResize(90); 
+      $('dTh').src = data.secure_url; setState('done'); 
+      forceResize(120); 
     }).catch(err => { alert('Upload failed.'); $('uBtn').textContent = 'Crop & Done'; $('uBtn').disabled = false; });
   }, 'image/png');
 };
@@ -97,10 +122,14 @@ function openEditor(f) {
   reader.readAsDataURL(f);
 }
 function positionOverlay() { if (!cropper || !cfg.overlayUrl) return; var box = cropper.getCropBoxData(), el = $('ovL'); el.style.left = box.left + 'px'; el.style.top = box.top + 'px'; el.style.width = box.width + 'px'; el.style.height = box.height + 'px'; }
-function setState(s) { $('dz').style.display = s === 'dz' ? 'inline-flex' : 'none'; $('ed').classList.toggle('on', s === 'ed'); $('doneP').classList.toggle('on', s === 'done'); }
+function setState(s) { 
+  $('dz').style.display = s === 'dz' ? 'inline-flex' : 'none'; 
+  $('ed').classList.toggle('on', s === 'ed'); 
+  $('doneP').classList.toggle('on', s === 'done'); 
+}
 var fi = $('fi'); fi.addEventListener('change', function(e){ if(e.target.files.length) openEditor(e.target.files[0]); });
-window.doCancel = function() { setState('dz'); forceResize(80); };
-window.doRemove = function() { setState('dz'); forceResize(80); JFCustomWidget.sendData({ value: '' }); };
+window.doCancel = function() { setState('dz'); forceResize(110); };
+window.doRemove = function() { setState('dz'); forceResize(110); JFCustomWidget.sendData({ value: '' }); };
 })();
 </script>
 </body>
