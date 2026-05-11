@@ -24,7 +24,7 @@
     padding:0;
     overflow: visible;
     display: flex;
-    justify-content: center; /* Centers the button horizontally */
+    justify-content: center; 
   }
 
   /* ---- BLUE BUTTON STYLE ---- */
@@ -32,10 +32,10 @@
     background: var(--ac);
     color: #fff;
     border-radius: var(--rs);
-    padding: 12px 24px;
+    padding: 10px 20px;
     display: inline-flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     cursor: pointer;
     transition: all 150ms ease;
     border: none;
@@ -49,8 +49,8 @@
     box-shadow: 0 4px 12px rgba(45, 91, 227, 0.3);
   }
   .dz-ico svg{
-    width: 20px; height: 20px;
-    stroke: #fff; fill: none; stroke-width: 2;
+    width: 18px; height: 18px;
+    stroke: #fff; fill: none; stroke-width: 2.5;
   }
   .dz h3{
     font-size: 14px; font-weight: 600; margin: 0;
@@ -144,7 +144,6 @@ JFCustomWidget.subscribe('ready', function() {
   cfg.outputWidth  = parseInt(w) || 1920;
   cfg.outputHeight = parseInt(h) || 1080;
 
-  // Initial small size
   JFCustomWidget.requestFrameResize({ height: 80 });
 });
 
