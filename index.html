@@ -15,31 +15,36 @@
     --r:10px;--rs:7px;--rx:5px;
     --f:'DM Sans',system-ui,sans-serif;
   }
-  body{
-    font-family:var(--f);
-    background:transparent;
-    color:var(--tx);
-    margin:0;
-    padding:0;
-    overflow: visible;
+  
+  /* FORCE FULL WIDTH ON JOTFORM */
+  html, body {
+    width: 100% !important;
+    min-width: 320px; /* Minimum mobile width */
+    background: transparent;
+    margin: 0;
+    padding: 0;
     display: flex;
     flex-direction: column;
-    align-items: center; /* This keeps the button centered */
-    width: 100%;
+    align-items: center;
+  }
+
+  body {
+    font-family: var(--f);
+    overflow: visible;
   }
   
   /* LABEL STYLE */
-  #wLabel{display:none; width:100%; text-align:center; font-size:13px; font-weight:700; color:var(--tx2); margin-bottom:10px; margin-top:5px; letter-spacing: -0.2px;}
+  #wLabel{display:none; width:100%; text-align:center; font-size:13px; font-weight:700; color:var(--tx2); margin-bottom:10px; margin-top:5px;}
 
-  /* BLUE BUTTON - inline-flex keeps it small */
+  /* BLUE BUTTON - Centers itself but allows parent to be wide */
   .dz{background:var(--ac);color:#fff;border-radius:var(--rs);padding:10px 20px;display:inline-flex;align-items:center;gap:8px;cursor:pointer;transition:all 150ms ease;border:none;box-shadow:0 2px 6px rgba(45,91,227,0.2);position:relative;}
   .dz:hover{background:var(--ac-h);transform:translateY(-1px);box-shadow:0 4px 12px rgba(45,91,227,0.3);}
   .dz-ico svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2.5;}
   .dz h3{font-size:14px; font-weight:600; margin:0;}
   .dz input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;}
 
-  /* EDITOR - Changed to width 100% and block to prevent shrinking */
-  .ed{display:none; width:100% !important; max-width: 800px; padding:15px; background:#fff; border-radius:var(--r); border:1px solid var(--bdr); box-shadow: 0 4px 20px rgba(0,0,0,0.05);}
+  /* EDITOR - Now forces the container to expand */
+  .ed{display:none; width:95% !important; max-width: 750px; margin: 0 auto; padding:15px; background:#fff; border-radius:var(--r); border:1px solid var(--bdr); box-shadow: 0 10px 30px rgba(0,0,0,0.08);}
   .ed.on{display:block}
   
   .crop-wrap{position:relative;width:100%;border-radius:var(--rs);overflow:hidden;background:#0e0e0e;}
@@ -56,8 +61,8 @@
   .btn{padding:12px 24px;border-radius:var(--rs);border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--f);transition:0.2s;}
   .btn-p{background:var(--ac);color:#fff}.btn-p:hover{background:var(--ac-h)}.btn-o{background:var(--card);color:var(--tx2);border:1px solid var(--bdr)}
 
-  /* DONE CARD - Width 100% */
-  .done{display:none; width:100% !important; max-width: 800px;}
+  /* DONE CARD */
+  .done{display:none; width:95% !important; max-width: 750px;}
   .done.on{display:block}
   .done-card{display:flex;gap:15px;align-items:center;background:#e4f5ec;border:1px solid #b4dfc8;border-radius:var(--rs);padding:12px 18px;}
   .done-thumb{width:45px;height:45px;border-radius:var(--rx);object-fit:cover;border:2px solid #fff;}
@@ -88,11 +93,8 @@ var cropper = null, resultFilename = null, $ = function(id){ return document.get
 function forceResize(h) { let count = 0; const interval = setInterval(() => { JFCustomWidget.requestFrameResize({ height: h }); if (++count > 12) clearInterval(interval); }, 50); }
 
 JFCustomWidget.subscribe('ready', function() {
-  var ow = JFCustomWidget.getWidgetSetting('overlayUrl');
-  var w = JFCustomWidget.getWidgetSetting('outputWidth');
-  var h = JFCustomWidget.getWidgetSetting('outputHeight');
-  var labelText = JFCustomWidget.getWidgetSetting('widgetLabel');
-  var showLabel = JFCustomWidget.getWidgetSetting('showLabel');
+  var ow = JFCustomWidget.getWidgetSetting('overlayUrl'), w = JFCustomWidget.getWidgetSetting('outputWidth'), h = JFCustomWidget.getWidgetSetting('outputHeight');
+  var labelText = JFCustomWidget.getWidgetSetting('widgetLabel'), showLabel = JFCustomWidget.getWidgetSetting('showLabel');
 
   if (showLabel === 'Yes' && labelText) {
     cfg.hasLabel = true;
@@ -125,8 +127,7 @@ window.doUpload = function() {
     .then(res => res.json()).then(data => {
       var finalUrl = data.secure_url.replace('/upload/', '/upload/f_png,fl_attachment/');
       resultFilename = finalUrl; JFCustomWidget.sendData({ value: finalUrl });
-      $('dTh').src = data.secure_url; 
-      setState('done'); 
+      $('dTh').src = data.secure_url; setState('done'); 
       forceResize(cfg.hasLabel ? 120 : 90); 
     }).catch(err => { alert('Upload failed.'); $('uBtn').textContent = 'Crop & Done'; $('uBtn').disabled = false; });
   }, 'image/png');
