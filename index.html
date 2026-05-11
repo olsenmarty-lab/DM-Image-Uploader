@@ -80,8 +80,7 @@ window.doUpload = function() {
 
     fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, { method: 'POST', body: formData })
     .then(res => res.json()).then(data => {
-      var downloadFlag = 'f_png,fl_attachment:' + shortID;
-      var finalUrl = data.secure_url.replace('/upload/', '/upload/' + downloadFlag + '/');
+      var finalUrl = data.secure_url.replace('/upload/', '/upload/f_png,fl_attachment/');
       resultFilename = finalUrl; JFCustomWidget.sendData({ value: finalUrl });
       $('dTh').src = data.secure_url; setState('done'); forceResize(90); 
     }).catch(err => { alert('Upload failed.'); $('uBtn').textContent = 'Crop & Done'; $('uBtn').disabled = false; });
