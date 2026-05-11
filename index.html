@@ -143,7 +143,6 @@ JFCustomWidget.subscribe('ready', function() {
   if (ow) { cfg.overlayUrl = ow.trim(); $('ovLI').src = cfg.overlayUrl; }
   cfg.outputWidth  = parseInt(w) || 1920;
   cfg.outputHeight = parseInt(h) || 1080;
-
   JFCustomWidget.requestFrameResize({ height: 80 });
 });
 
@@ -155,8 +154,13 @@ window.doUpload = function() {
     var formData = new FormData();
     formData.append('file', blob);
     formData.append('upload_preset', uploadPreset);
+    
+    // Generate Unique ID
     var uniqueID = 'render_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
+    
+    // Force Filename Metadata
     formData.append('public_id', uniqueID);
+    formData.append('original_filename', uniqueID);
 
     $('uBtn').textContent = 'Uploading...';
     $('uBtn').disabled = true;
