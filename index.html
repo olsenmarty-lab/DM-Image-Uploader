@@ -12,7 +12,6 @@
   :root{
     --bg:#f7f7f5;--card:#fff;--bdr:#e4e3de;--tx:#1c1c1a;--tx2:#6e6d68;--tx3:#a3a29c;
     --ac:#2d5be3;--ac-s:#e8edfb;--ac-h:#1d44b8;
-    --gn:#1a8756;--gn-s:#e4f5ec;--rd:#c03030;
     --r:10px;--rs:7px;--rx:5px;
     --f:'DM Sans',system-ui,-apple-system,sans-serif;
   }
@@ -21,58 +20,45 @@
     font-family:var(--f);
     background:transparent;
     color:var(--tx);
-    line-height:1.5;
+    line-height:1.2;
     margin:0;
-    padding:8px;
-    min-height: 500px; /* Force height for JotForm */
+    padding:5px;
+    overflow: hidden; /* Prevents scrollbars in small widgets */
   }
 
   /* ---- DROPZONE ---- */
   .dz{
-    border:2px dashed var(--bdr);border-radius:var(--r);padding:24px 16px;
+    border:2px dashed var(--bdr);border-radius:var(--r);padding:15px;
     text-align:center;cursor:pointer;transition:all 150ms;background:var(--bg);position:relative;
   }
   .dz:hover,.dz.over{border-color:var(--ac);background:var(--ac-s)}
-  .dz-ico{
-    width:40px;height:40px;margin:0 auto 8px;border-radius:50%;
-    background:var(--ac-s);display:flex;align-items:center;justify-content:center;
-  }
-  .dz-ico svg{width:20px;height:20px;stroke:var(--ac);fill:none;stroke-width:1.8}
-  .dz h3{font-size:14px;font-weight:500;margin-bottom:2px}
-  .dz .lk{color:var(--ac);font-weight:600;text-decoration:underline;text-underline-offset:2px}
-  .dz p{font-size:12px;color:var(--tx3)}
-  .dz input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0}
+  .dz-ico svg{width:24px;height:24px;stroke:var(--ac);fill:none;stroke-width:1.8;margin-bottom:4px}
+  .dz h3{font-size:13px;font-weight:500;}
+  .dz .lk{color:var(--ac);font-weight:600;text-decoration:underline;}
+  .dz p{font-size:10px;color:var(--tx3)}
+  .dz input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;}
 
   /* ---- EDITOR ---- */
   .ed{display:none}.ed.on{display:block}
   .crop-wrap{position:relative;width:100%;border-radius:var(--rs);overflow:hidden;background:#0e0e0e;}
-  .crop-wrap img.cs{display:block;max-width:100%;max-height:340px}
+  .crop-wrap img.cs{display:block;max-width:100%;max-height:300px}
   .ov-lay{position:absolute;pointer-events:none;z-index:100;display:none;overflow:hidden;}
   .ov-lay.on{display:block}
   .ov-lay img{width:100%;height:100%;display:block}
-  .ov-hint{display:none;align-items:center;gap:5px;padding:5px 0;font-size:11px;color:var(--tx3);}
-  .ov-hint.on{display:flex}
-  .ov-hint svg{width:12px;height:12px;stroke:var(--tx3);fill:none;stroke-width:1.8;flex-shrink:0}
-  .crop-info{display:flex;align-items:center;justify-content:space-between;padding:5px 0;font-size:11px;color:var(--tx3);}
-  .dims{background:var(--bg);padding:2px 7px;border-radius:var(--rx);font-size:11px;font-weight:500;color:var(--tx2);}
-  .dims.ok{background:var(--gn-s);color:var(--gn)}
-  .ed-bar{display:flex;justify-content:flex-end;gap:6px;padding:8px 0 0}
-  .btn{padding:7px 16px;border-radius:var(--rs);border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all 150ms;font-family:var(--f);}
+  .crop-info{display:flex;align-items:center;justify-content:space-between;padding:4px 0;font-size:10px;color:var(--tx3);}
+  .dims{background:var(--bg);padding:1px 5px;border-radius:var(--rx);font-weight:500;color:var(--tx2);}
+  .ed-bar{display:flex;justify-content:flex-end;gap:6px;padding:5px 0}
+  .btn{padding:6px 12px;border-radius:var(--rs);border:none;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--f);}
   .btn-p{background:var(--ac);color:#fff}
-  .btn-p:hover{background:var(--ac-h)}
   .btn-o{background:var(--card);color:var(--tx2);border:1px solid var(--bdr)}
-  .btn-o:hover{background:var(--bg)}
 
   /* ---- DONE ---- */
   .done{display:none}.done.on{display:block}
-  .done-card{display:flex;gap:10px;align-items:center;background:var(--gn-s);border:1px solid #b4dfc8;border-radius:var(--rs);padding:10px 12px;}
-  .done-thumb{width:52px;height:52px;border-radius:var(--rx);object-fit:cover;border:1px solid #b4dfc8;flex-shrink:0;}
+  .done-card{display:flex;gap:10px;align-items:center;background:#e4f5ec;border:1px solid #b4dfc8;border-radius:var(--rs);padding:8px;}
+  .done-thumb{width:40px;height:40px;border-radius:var(--rx);object-fit:cover;border:1px solid #b4dfc8;}
   .done-info{flex:1;min-width:0}
-  .done-fn{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .done-fm{font-size:11px;color:var(--gn);margin-top:2px}
-  .done-rm{padding:5px 10px;border-radius:var(--rx);border:1px solid #b4dfc8;background:transparent;color:var(--gn);font-size:11px;font-weight:500;cursor:pointer;font-family:var(--f);white-space:nowrap;flex-shrink:0;}
-  .cropper-view-box{outline:2px solid var(--ac);outline-offset:-1px}
-  .cropper-point{background:var(--ac)!important;width:9px!important;height:9px!important;border-radius:50%!important;opacity:1!important}
+  .done-fn{font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .done-rm{padding:4px 8px;border-radius:var(--rx);border:1px solid #b4dfc8;background:transparent;color:#1a8756;font-size:10px;font-weight:500;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -80,20 +66,15 @@
   <div class="dz" id="dz">
     <div class="dz-ico"><svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L7 9m5-5l5 5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <h3>Drop image or <span class="lk">browse</span></h3>
-    <p>JPEG, PNG, WebP — up to 25 MB</p>
-    <input type="file" id="fi" accept="image/jpeg,image/png,image/webp,image/gif">
+    <input type="file" id="fi" accept="image/jpeg,image/png,image/webp">
   </div>
 
   <div class="ed" id="ed">
     <div class="crop-wrap" id="cWrap">
-      <img class="cs" id="cImg" src="" alt="Crop preview">
+      <img class="cs" id="cImg" src="" alt="">
       <div class="ov-lay" id="ovL"><img id="ovLI" src="" alt=""></div>
     </div>
-    <div class="ov-hint" id="ovH">
-      <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3"/></svg>
-      <span>Overlay shows how your image will appear in the final render</span>
-    </div>
-    <div class="crop-info"><span id="cLbl">Ratio locked</span><span class="dims ok" id="cDim"></span></div>
+    <div class="crop-info"><span>Ratio locked</span><span class="dims" id="cDim"></span></div>
     <div class="ed-bar">
       <button class="btn btn-o" onclick="doCancel()">Cancel</button>
       <button class="btn btn-p" id="uBtn" onclick="doUpload()">Crop &amp; Done</button>
@@ -104,8 +85,8 @@
     <div class="done-card">
       <img class="done-thumb" id="dTh" src="" alt="">
       <div class="done-info">
-        <div class="done-fn" id="dFn">Ready for Render</div>
-        <div class="done-fm" id="dFm">Cloudinary Hosted</div>
+        <div class="done-fn">Upload Successful</div>
+        <div style="font-size:10px; color:#1a8756;">Ready for Nexrender</div>
       </div>
       <button class="done-rm" onclick="doRemove()">Remove</button>
     </div>
@@ -117,18 +98,15 @@
 (function(){
 'use strict';
 
-// ─── CLOUDINARY CONFIG ────────────────────────────────────────────────────────
 var cloudName = 'douyogs5j';
 var uploadPreset = 'DM Image Upload Preset'; 
 
 var cfg = { overlayUrl: '', outputWidth: 1920, outputHeight: 1080 };
 var cropper = null;
-var selFile = null;
 var resultFilename = null;
 
 var $ = function(id){ return document.getElementById(id); };
 
-// ─── JOTFORM WIDGET BOOTSTRAP ─────────────────────────────────────────────────
 JFCustomWidget.subscribe('ready', function() {
   var ow = JFCustomWidget.getWidgetSetting('overlayUrl');
   var w  = JFCustomWidget.getWidgetSetting('outputWidth');
@@ -138,41 +116,61 @@ JFCustomWidget.subscribe('ready', function() {
   cfg.outputWidth  = parseInt(w) || 1920;
   cfg.outputHeight = parseInt(h) || 1080;
 
-  // Force height on load
-  resizeFrame(500);
+  // AUTO-RESIZE: Instead of hardcoded 500, we ask JotForm for the height 
+  // you set in the Form Builder UI.
+  var frameHeight = JFCustomWidget.getWidgetData().height || 150;
+  JFCustomWidget.requestFrameResize({ height: frameHeight });
 });
 
-JFCustomWidget.subscribe('submit', function() {
-  if (resultFilename) {
-    JFCustomWidget.sendSubmit({ valid: true, value: resultFilename });
-  } else {
-    JFCustomWidget.sendSubmit({ valid: false, value: '' });
-  }
-});
+window.doUpload = function() {
+  if (!cropper) return;
 
-function resizeFrame(h) { JFCustomWidget.requestFrameResize({ height: h }); }
+  var canvas = cropper.getCroppedCanvas({
+    width: cfg.outputWidth,
+    height: cfg.outputHeight,
+    imageSmoothingQuality: 'high'
+  });
 
-// ─── DROPZONE ─────────────────────────────────────────────────────────────────
-var dz = $('dz');
-var fi = $('fi');
-dz.addEventListener('dragover', function(e){ e.preventDefault(); dz.classList.add('over'); });
-dz.addEventListener('dragleave', function(){ dz.classList.remove('over'); });
-dz.addEventListener('drop', function(e){ e.preventDefault(); dz.classList.remove('over'); if(e.dataTransfer.files.length) pickFile(e.dataTransfer.files[0]); });
-fi.addEventListener('change', function(e){ if(e.target.files.length) pickFile(e.target.files[0]); });
+  canvas.toBlob(function(blob) {
+    var formData = new FormData();
+    formData.append('file', blob);
+    formData.append('upload_preset', uploadPreset);
+    
+    // UNIQUE FILENAME FOR NEXRENDER
+    var uniqueID = 'render_' + Math.random().toString(36).substring(2, 9);
+    formData.append('public_id', uniqueID);
 
-function pickFile(f) {
-  var allowed = ['image/jpeg','image/png','image/webp','image/gif'];
-  if (allowed.indexOf(f.type) === -1) { alert('Invalid format.'); return; }
-  selFile = f;
-  openEditor(f);
-}
+    $('uBtn').textContent = 'Uploading...';
+    $('uBtn').disabled = true;
+
+    fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+      method: 'POST',
+      body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+      // Create Nexrender-friendly URL
+      var finalUrl = data.secure_url.replace('/upload/', '/upload/f_png,fl_attachment/');
+
+      resultFilename = finalUrl;
+      JFCustomWidget.sendData({ value: resultFilename });
+
+      $('dTh').src = data.secure_url;
+      setState('done');
+    })
+    .catch(err => {
+      alert('Upload failed.');
+      $('uBtn').textContent = 'Crop & Done';
+      $('uBtn').disabled = false;
+    });
+  }, 'image/png');
+};
 
 function openEditor(f) {
   var reader = new FileReader();
   reader.onload = function(e) {
     $('cImg').src = e.target.result;
     setState('ed');
-    resizeFrame(600);
     if (cropper) cropper.destroy();
     cropper = new Cropper($('cImg'), {
       aspectRatio: cfg.outputWidth / cfg.outputHeight,
@@ -180,8 +178,8 @@ function openEditor(f) {
       dragMode: 'move',
       crop: function() { positionOverlay(); },
       ready: function() { 
-        $('cDim').textContent = cfg.outputWidth + ' × ' + cfg.outputHeight + ' px';
-        if (cfg.overlayUrl) showOverlay(); 
+        $('cDim').textContent = cfg.outputWidth + '×' + cfg.outputHeight;
+        if (cfg.overlayUrl) { positionOverlay(); $('ovL').classList.add('on'); }
       }
     });
   };
@@ -196,59 +194,17 @@ function positionOverlay() {
   el.style.width = box.width + 'px'; el.style.height = box.height + 'px';
 }
 
-function showOverlay() { if(cfg.overlayUrl){ positionOverlay(); $('ovL').classList.add('on'); $('ovH').classList.add('on'); } }
-function hideOverlay() { $('ovL').classList.remove('on'); $('ovH').classList.remove('on'); }
-
-// ─── CROP & UPLOAD TO CLOUDINARY ─────────────────────────────────────────────
-window.doUpload = function() {
-  if (!cropper) return;
-
-  var canvas = cropper.getCroppedCanvas({
-    width: cfg.outputWidth,
-    height: cfg.outputHeight,
-    imageSmoothingQuality: 'high'
-  });
-
-  canvas.toBlob(function(blob) {
-    var formData = new FormData();
-    formData.append('file', blob);
-    formData.append('upload_preset', uploadPreset);
-
-    $('uBtn').textContent = 'Uploading...';
-    $('uBtn').disabled = true;
-
-    fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-      method: 'POST',
-      body: formData
-    })
-    .then(res => res.json())
-    .then(data => {
-      // Create Nexrender-friendly URL (Force PNG and Attachment)
-      var finalUrl = data.secure_url.replace('/upload/', '/upload/f_png,fl_attachment/');
-
-      resultFilename = finalUrl;
-      JFCustomWidget.sendData({ value: resultFilename });
-
-      $('dTh').src = data.secure_url;
-      setState('done');
-      resizeFrame(120);
-    })
-    .catch(err => {
-      alert('Upload failed.');
-      $('uBtn').textContent = 'Crop & Done';
-      $('uBtn').disabled = false;
-    });
-  }, 'image/png');
-};
-
-window.doCancel = function() { if(cropper) cropper.destroy(); setState('dz'); resizeFrame(500); };
-window.doRemove = function() { setState('dz'); resizeFrame(500); resultFilename = null; JFCustomWidget.sendData({ value: '' }); };
-
 function setState(s) {
   $('dz').style.display = s === 'dz' ? '' : 'none';
   $('ed').classList.toggle('on', s === 'ed');
   $('doneP').classList.toggle('on', s === 'done');
 }
+
+var fi = $('fi');
+fi.addEventListener('change', function(e){ if(e.target.files.length) openEditor(e.target.files[0]); });
+window.doCancel = function() { setState('dz'); };
+window.doRemove = function() { setState('dz'); resultFilename = null; JFCustomWidget.sendData({ value: '' }); };
+
 })();
 </script>
 </body>
