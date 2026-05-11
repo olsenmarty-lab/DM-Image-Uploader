@@ -23,49 +23,50 @@
     line-height:1.2;
     margin:0;
     padding:5px;
-    overflow: hidden; /* Prevents scrollbars in small widgets */
+    overflow: hidden; 
   }
 
-  /* ---- DROPZONE ---- */
+  /* ---- DROPZONE (Initial Small State) ---- */
   .dz{
     border:2px dashed var(--bdr);border-radius:var(--r);padding:15px;
     text-align:center;cursor:pointer;transition:all 150ms;background:var(--bg);position:relative;
+    height: 100%; /* Fill the small initial height */
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
   }
   .dz:hover,.dz.over{border-color:var(--ac);background:var(--ac-s)}
   .dz-ico svg{width:24px;height:24px;stroke:var(--ac);fill:none;stroke-width:1.8;margin-bottom:4px}
   .dz h3{font-size:13px;font-weight:500;}
   .dz .lk{color:var(--ac);font-weight:600;text-decoration:underline;}
-  .dz p{font-size:10px;color:var(--tx3)}
   .dz input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;}
 
-  /* ---- EDITOR ---- */
+  /* ---- EDITOR (Large State) ---- */
   .ed{display:none}.ed.on{display:block}
   .crop-wrap{position:relative;width:100%;border-radius:var(--rs);overflow:hidden;background:#0e0e0e;}
-  .crop-wrap img.cs{display:block;max-width:100%;max-height:300px}
+  .crop-wrap img.cs{display:block;max-width:100%;max-height:400px} /* Increased for better visibility */
   .ov-lay{position:absolute;pointer-events:none;z-index:100;display:none;overflow:hidden;}
   .ov-lay.on{display:block}
   .ov-lay img{width:100%;height:100%;display:block}
-  .crop-info{display:flex;align-items:center;justify-content:space-between;padding:4px 0;font-size:10px;color:var(--tx3);}
-  .dims{background:var(--bg);padding:1px 5px;border-radius:var(--rx);font-weight:500;color:var(--tx2);}
-  .ed-bar{display:flex;justify-content:flex-end;gap:6px;padding:5px 0}
-  .btn{padding:6px 12px;border-radius:var(--rs);border:none;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--f);}
+  .crop-info{display:flex;align-items:center;justify-content:space-between;padding:8px 0;font-size:11px;color:var(--tx3);}
+  .dims{background:var(--bg);padding:2px 6px;border-radius:var(--rx);font-weight:500;color:var(--tx2);}
+  .ed-bar{display:flex;justify-content:flex-end;gap:8px;padding:10px 0}
+  .btn{padding:8px 16px;border-radius:var(--rs);border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--f);}
   .btn-p{background:var(--ac);color:#fff}
   .btn-o{background:var(--card);color:var(--tx2);border:1px solid var(--bdr)}
 
   /* ---- DONE ---- */
   .done{display:none}.done.on{display:block}
-  .done-card{display:flex;gap:10px;align-items:center;background:#e4f5ec;border:1px solid #b4dfc8;border-radius:var(--rs);padding:8px;}
-  .done-thumb{width:40px;height:40px;border-radius:var(--rx);object-fit:cover;border:1px solid #b4dfc8;}
+  .done-card{display:flex;gap:10px;align-items:center;background:#e4f5ec;border:1px solid #b4dfc8;border-radius:var(--rs);padding:12px;}
+  .done-thumb{width:50px;height:50px;border-radius:var(--rx);object-fit:cover;border:1px solid #b4dfc8;}
   .done-info{flex:1;min-width:0}
-  .done-fn{font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .done-rm{padding:4px 8px;border-radius:var(--rx);border:1px solid #b4dfc8;background:transparent;color:#1a8756;font-size:10px;font-weight:500;cursor:pointer;}
+  .done-fn{font-size:13px;font-weight:600;color:#1a8756; overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .done-rm{padding:6px 10px;border-radius:var(--rx);border:1px solid #b4dfc8;background:transparent;color:#1a8756;font-size:11px;font-weight:500;cursor:pointer;}
 </style>
 </head>
 <body>
 
   <div class="dz" id="dz">
     <div class="dz-ico"><svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L7 9m5-5l5 5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <h3>Drop image or <span class="lk">browse</span></h3>
+    <h3>Upload Image for Render</h3>
     <input type="file" id="fi" accept="image/jpeg,image/png,image/webp">
   </div>
 
@@ -74,7 +75,7 @@
       <img class="cs" id="cImg" src="" alt="">
       <div class="ov-lay" id="ovL"><img id="ovLI" src="" alt=""></div>
     </div>
-    <div class="crop-info"><span>Ratio locked</span><span class="dims" id="cDim"></span></div>
+    <div class="crop-info"><span>Crop your image to fit the render area</span><span class="dims" id="cDim"></span></div>
     <div class="ed-bar">
       <button class="btn btn-o" onclick="doCancel()">Cancel</button>
       <button class="btn btn-p" id="uBtn" onclick="doUpload()">Crop &amp; Done</button>
@@ -86,7 +87,7 @@
       <img class="done-thumb" id="dTh" src="" alt="">
       <div class="done-info">
         <div class="done-fn">Upload Successful</div>
-        <div style="font-size:10px; color:#1a8756;">Ready for Nexrender</div>
+        <div style="font-size:11px; color:#1a8756;">Nexrender: PNG-Attachment Mode</div>
       </div>
       <button class="done-rm" onclick="doRemove()">Remove</button>
     </div>
@@ -101,12 +102,12 @@
 var cloudName = 'douyogs5j';
 var uploadPreset = 'DM Image Upload Preset'; 
 
-var cfg = { overlayUrl: '', outputWidth: 1920, outputHeight: 1080 };
+var cfg = { overlayUrl: '', outputWidth: 1920, outputHeight: 1080, initialHeight: 150 };
 var cropper = null;
-var resultFilename = null;
 
 var $ = function(id){ return document.getElementById(id); };
 
+// ─── INITIAL SETUP ────────────────────────────────────────────────────────────
 JFCustomWidget.subscribe('ready', function() {
   var ow = JFCustomWidget.getWidgetSetting('overlayUrl');
   var w  = JFCustomWidget.getWidgetSetting('outputWidth');
@@ -116,12 +117,12 @@ JFCustomWidget.subscribe('ready', function() {
   cfg.outputWidth  = parseInt(w) || 1920;
   cfg.outputHeight = parseInt(h) || 1080;
 
-  // AUTO-RESIZE: Instead of hardcoded 500, we ask JotForm for the height 
-  // you set in the Form Builder UI.
-  var frameHeight = JFCustomWidget.getWidgetData().height || 150;
-  JFCustomWidget.requestFrameResize({ height: frameHeight });
+  // Set the "small" height based on your form settings
+  cfg.initialHeight = JFCustomWidget.getWidgetData().height || 150;
+  JFCustomWidget.requestFrameResize({ height: cfg.initialHeight });
 });
 
+// ─── UPLOAD LOGIC ─────────────────────────────────────────────────────────────
 window.doUpload = function() {
   if (!cropper) return;
 
@@ -135,8 +136,6 @@ window.doUpload = function() {
     var formData = new FormData();
     formData.append('file', blob);
     formData.append('upload_preset', uploadPreset);
-    
-    // UNIQUE FILENAME FOR NEXRENDER
     var uniqueID = 'render_' + Math.random().toString(36).substring(2, 9);
     formData.append('public_id', uniqueID);
 
@@ -144,19 +143,15 @@ window.doUpload = function() {
     $('uBtn').disabled = true;
 
     fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-      method: 'POST',
-      body: formData
+      method: 'POST', body: formData
     })
     .then(res => res.json())
     .then(data => {
-      // Create Nexrender-friendly URL
       var finalUrl = data.secure_url.replace('/upload/', '/upload/f_png,fl_attachment/');
-
-      resultFilename = finalUrl;
-      JFCustomWidget.sendData({ value: resultFilename });
-
+      JFCustomWidget.sendData({ value: finalUrl });
       $('dTh').src = data.secure_url;
       setState('done');
+      JFCustomWidget.requestFrameResize({ height: cfg.initialHeight }); // Shrink back down
     })
     .catch(err => {
       alert('Upload failed.');
@@ -166,11 +161,16 @@ window.doUpload = function() {
   }, 'image/png');
 };
 
+// ─── STATE MANAGEMENT ─────────────────────────────────────────────────────────
 function openEditor(f) {
   var reader = new FileReader();
   reader.onload = function(e) {
     $('cImg').src = e.target.result;
     setState('ed');
+    
+    // PUSH FORM OPEN: Change to a large height for cropping
+    JFCustomWidget.requestFrameResize({ height: 650 });
+
     if (cropper) cropper.destroy();
     cropper = new Cropper($('cImg'), {
       aspectRatio: cfg.outputWidth / cfg.outputHeight,
@@ -195,15 +195,22 @@ function positionOverlay() {
 }
 
 function setState(s) {
-  $('dz').style.display = s === 'dz' ? '' : 'none';
+  $('dz').style.display = s === 'dz' ? 'flex' : 'none';
   $('ed').classList.toggle('on', s === 'ed');
   $('doneP').classList.toggle('on', s === 'done');
 }
 
 var fi = $('fi');
 fi.addEventListener('change', function(e){ if(e.target.files.length) openEditor(e.target.files[0]); });
-window.doCancel = function() { setState('dz'); };
-window.doRemove = function() { setState('dz'); resultFilename = null; JFCustomWidget.sendData({ value: '' }); };
+window.doCancel = function() { 
+  setState('dz'); 
+  JFCustomWidget.requestFrameResize({ height: cfg.initialHeight }); 
+};
+window.doRemove = function() { 
+  setState('dz'); 
+  JFCustomWidget.requestFrameResize({ height: cfg.initialHeight }); 
+  JFCustomWidget.sendData({ value: '' }); 
+};
 
 })();
 </script>
