@@ -16,15 +16,11 @@
     --f:'DM Sans',system-ui,sans-serif;
   }
   body{font-family:var(--f);background:transparent;color:var(--tx);margin:0;padding:0;overflow:visible;display:flex;justify-content:center;}
-  
-  /* BLUE BUTTON */
   .dz{background:var(--ac);color:#fff;border-radius:var(--rs);padding:10px 20px;display:inline-flex;align-items:center;gap:8px;cursor:pointer;transition:all 150ms ease;border:none;box-shadow:0 2px 6px rgba(45,91,227,0.2);position:relative;margin-top:5px;}
   .dz:hover{background:var(--ac-h);transform:translateY(-1px);box-shadow:0 4px 12px rgba(45,91,227,0.3);}
   .dz-ico svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2.5;}
   .dz h3{font-size:14px;font-weight:600;margin:0;}
   .dz input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;}
-
-  /* EDITOR */
   .ed{display:none;width:100%;max-width:700px;padding:10px;background:#fff;border-radius:var(--r);border:1px solid var(--bdr);}
   .ed.on{display:block}
   .crop-wrap{position:relative;width:100%;border-radius:var(--rs);overflow:hidden;background:#0e0e0e;}
@@ -35,12 +31,8 @@
   .crop-info{display:flex;align-items:center;justify-content:space-between;padding:10px 0;font-size:11px;color:var(--tx3);}
   .dims{background:var(--bg);padding:3px 8px;border-radius:var(--rx);font-weight:700;color:var(--ac);}
   .ed-bar{display:flex;justify-content:flex-end;gap:10px;padding-top:10px;border-top:1px solid var(--bdr)}
-  
-  /* BUTTONS */
   .btn{padding:10px 20px;border-radius:var(--rs);border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--f);transition:0.2s;}
   .btn-p{background:var(--ac);color:#fff}.btn-p:hover{background:var(--ac-h)}.btn-o{background:var(--card);color:var(--tx2);border:1px solid var(--bdr)}
-
-  /* DONE CARD */
   .done{display:none;width:100%;}.done.on{display:block}
   .done-card{display:flex;gap:15px;align-items:center;background:#e4f5ec;border:1px solid #b4dfc8;border-radius:var(--rs);padding:10px 15px;}
   .done-thumb{width:45px;height:45px;border-radius:var(--rx);object-fit:cover;border:2px solid #fff;}
@@ -51,35 +43,17 @@
 </head>
 <body>
 
-  <div class="dz" id="dz">
-    <div class="dz-ico"><svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L7 9m5-5l5 5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <h3>Upload Image</h3>
-    <input type="file" id="fi" accept="image/jpeg,image/png,image/webp">
-  </div>
+  <div class="dz" id="dz"><div class="dz-ico"><svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L7 9m5-5l5 5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3>Upload Image</h3><input type="file" id="fi" accept="image/jpeg,image/png,image/webp"></div>
 
-  <div class="ed" id="ed">
-    <div class="crop-wrap" id="cWrap">
-      <img class="cs" id="cImg" src="" alt="">
-      <div class="ov-lay" id="ovL"><img id="ovLI" src="" alt=""></div>
-    </div>
-    <div class="crop-info"><span>Adjust crop to fit render area</span><span class="dims" id="cDim"></span></div>
-    <div class="ed-bar"><button class="btn btn-o" onclick="doCancel()">Cancel</button><button class="btn btn-p" id="uBtn" onclick="doUpload()">Crop &amp; Done</button></div>
-  </div>
+  <div class="ed" id="ed"><div class="crop-wrap" id="cWrap"><img class="cs" id="cImg" src="" alt=""><div class="ov-lay" id="ovL"><img id="ovLI" src="" alt=""></div></div><div class="crop-info"><span>Adjust crop to fit render area</span><span class="dims" id="cDim"></span></div><div class="ed-bar"><button class="btn btn-o" onclick="doCancel()">Cancel</button><button class="btn btn-p" id="uBtn" onclick="doUpload()">Crop &amp; Done</button></div></div>
 
-  <div class="done" id="doneP">
-    <div class="done-card">
-      <img class="done-thumb" id="dTh" src="" alt="">
-      <div class="done-info"><div class="done-fn">Upload Successful</div><div style="font-size:11px; color:#1a8756; font-weight:500;">Ready for Nexrender</div></div>
-      <button class="done-rm" onclick="doRemove()">Change Image</button>
-    </div>
-  </div>
+  <div class="done" id="doneP"><div class="done-card"><img class="done-thumb" id="dTh" src="" alt=""><div class="done-info"><div class="done-fn">Upload Successful</div><div style="font-size:11px; color:#1a8756; font-weight:500;">Ready for Nexrender</div></div><button class="done-rm" onclick="doRemove()">Change Image</button></div></div>
 
 <script src="https://js.jotform.com/JotFormCustomWidget.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
 <script>
 (function(){
 'use strict';
-
 var cloudName = 'douyogs5j', uploadPreset = 'DM Image Upload Preset'; 
 var cfg = { overlayUrl: '', outputWidth: 1920, outputHeight: 1080 }, cropper = null, resultFilename = null, $ = function(id){ return document.getElementById(id); };
 
@@ -95,35 +69,22 @@ JFCustomWidget.subscribe('ready', function() {
 window.doUpload = function() {
   if (!cropper) return;
   var canvas = cropper.getCroppedCanvas({ width: cfg.outputWidth, height: cfg.outputHeight, imageSmoothingQuality: 'high' });
-  
   canvas.toBlob(function(blob) {
-    // 1. Generate AE-friendly ID
-    var shortID = 'R_' + Math.floor(Date.now() / 1000) + '_' + Math.random().toString(36).substring(2, 5);
-    
-    // 2. Wrap in File object for internal metadata
+    var shortID = 'R' + Math.floor(Date.now() / 1000);
     var file = new File([blob], shortID + ".png", { type: "image/png" });
-
     var formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_preset', uploadPreset);
+    formData.append('file', file); formData.append('upload_preset', uploadPreset);
     formData.append('public_id', shortID);
-    formData.append('original_filename', shortID);
 
     $('uBtn').textContent = 'Uploading...'; $('uBtn').disabled = true;
 
     fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, { method: 'POST', body: formData })
     .then(res => res.json()).then(data => {
-      // 3. THE SEO URL FIX: Insert filename into the path to ensure Chrome finds it and names it correctly
-      var urlParts = data.secure_url.split('/upload/');
-      var finalUrl = urlParts[0] + '/upload/f_png,fl_attachment/' + shortID + '/' + urlParts[1];
-
-      resultFilename = finalUrl;
-      JFCustomWidget.sendData({ value: finalUrl });
-      $('dTh').src = data.secure_url;
-      setState('done'); 
-      forceResize(90); 
-    })
-    .catch(err => { alert('Upload failed.'); $('uBtn').textContent = 'Crop & Done'; $('uBtn').disabled = false; });
+      var downloadFlag = 'f_png,fl_attachment:' + shortID;
+      var finalUrl = data.secure_url.replace('/upload/', '/upload/' + downloadFlag + '/');
+      resultFilename = finalUrl; JFCustomWidget.sendData({ value: finalUrl });
+      $('dTh').src = data.secure_url; setState('done'); forceResize(90); 
+    }).catch(err => { alert('Upload failed.'); $('uBtn').textContent = 'Crop & Done'; $('uBtn').disabled = false; });
   }, 'image/png');
 };
 
@@ -136,7 +97,6 @@ function openEditor(f) {
   };
   reader.readAsDataURL(f);
 }
-
 function positionOverlay() { if (!cropper || !cfg.overlayUrl) return; var box = cropper.getCropBoxData(), el = $('ovL'); el.style.left = box.left + 'px'; el.style.top = box.top + 'px'; el.style.width = box.width + 'px'; el.style.height = box.height + 'px'; }
 function setState(s) { $('dz').style.display = s === 'dz' ? 'inline-flex' : 'none'; $('ed').classList.toggle('on', s === 'ed'); $('doneP').classList.toggle('on', s === 'done'); }
 var fi = $('fi'); fi.addEventListener('change', function(e){ if(e.target.files.length) openEditor(e.target.files[0]); });
